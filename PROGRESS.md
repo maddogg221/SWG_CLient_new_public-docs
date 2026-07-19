@@ -44,8 +44,21 @@ As the codebase has grown, deliberate time has been spent keeping it navigable �
 
 SWG's right-click interaction menu — the mechanism behind almost every "use," "examine," or context-specific action in the game — had a real, unresolved wire-format ambiguity blocking its decoding. This was tracked down and fully resolved through careful, methodical source analysis, not guesswork, and cross-checked against multiple independent pieces of evidence before being trusted. This one matters beyond itself: it's understood to be a likely prerequisite for meaningfully decoding both the crafting and combat systems, neither of which has been touched yet.
 
+## Milestone: the interaction-menu protocol, live-confirmed
+
+The right-click interaction-menu mystery from the previous milestone was solved on paper first, then confirmed against a real, deliberately-captured live interaction — not just trusted because the reasoning looked sound. Closing this out properly (not just "probably right") mattered because it unblocks meaningful work on both crafting and combat.
+
+## Milestone: real procedural terrain — research, parsing, and generation, live-verified twice over
+
+The game's real terrain isn't a stored heightmap — it's *generated* at runtime from a fairly intricate rule system (think: layered regions, boundaries, filters, and effects, each narrowing or blending into the next) plus a real coherent-noise function, all driven by data extracted from the game's own files. Getting this right meant, in order: a dedicated research pass into the real format (much of it recovered from historical source history, not just a current snapshot); a from-scratch parser for the on-disk file structure; an independent, from-scratch port of the actual noise/generation math; and finally the full rule-system walk that turns "a point on the map" into "a real height."
+
+Every stage was checked against real data before moving to the next — including a deliberate step of scanning every real map file this project has access to and tabulating which format variations actually appear in practice, so effort went toward what's real rather than every theoretical possibility the format historically supported.
+
+The final piece — does the generated height actually match the real game world? — needed something no amount of source-reading could provide: real, live ground-truth. Two independent real servers were used for this specifically so a match on one couldn't be dismissed as a fluke of that particular server's configuration. Both matched the computed height closely (well under a meter of difference on open ground), and a deliberately-included mismatched case (a position known to be inside a building rather than standing on terrain) confirmed the test itself was meaningful rather than trivially passing. See the Technical Notes for what this cross-check also turned up.
+
+Visual rendering of this terrain (turning generated height/color data into an actual 3D surface on screen) is the next concrete step — the generation logic itself is done and verified; hooking it into the rendering pipeline isn't yet.
+
 ## What's next
 
-- **Terrain and world rendering.** Everything rendered so far sits on a flat reference grid, not the game's real terrain. This is recognized as a prerequisite for crafting, combat, and travel to mean anything visually, and is a substantial undertaking in its own right.
-- **The interaction-menu protocol, live-confirmed.** The mystery above is solved on paper; getting a real live capture to confirm it against actual traffic is the next concrete step.
+- **Terrain rendering.** The generation logic is done and live-verified (see above); turning it into an actual rendered 3D surface in the live view is next.
 - **Crafting and combat protocol decode.** Both are large, mostly-unexplored surfaces, intentionally deferred until the prerequisites above are in place.

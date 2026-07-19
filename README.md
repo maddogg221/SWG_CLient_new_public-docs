@@ -19,13 +19,14 @@ The long-term goal is a complete, modern client capable of real gameplay: moveme
 - Real-time movement and position tracking for every nearby object.
 - A real rendering pipeline (**Vulkan**), decided on and built after direct hands-on rendering experience with an earlier prototype backend. Live-verified: a real 3D view showing tracked objects, a ground reference grid, a minimap, and floating name labels.
 - **Real game asset loading**, resolving actual objects from the live server into their real 3D models pulled directly from the game's own client data files — not placeholder shapes. This closed a long-standing internal mystery in how the game identifies which model belongs to which object; solving it made real content start rendering for the first time.
-- A recently-solved protocol mystery around the game's right-click radial-menu interaction system — a prerequisite for meaningfully decoding crafting and combat traffic, both of which are next.
+- The game's right-click radial-menu interaction protocol, solved and then live-confirmed against real captured traffic — a prerequisite for meaningfully decoding crafting and combat traffic, both of which are next.
+- **Real procedural terrain generation** — the game's actual terrain isn't a stored heightmap but a rule-driven generation system plus a real coherent-noise function; this project's own from-scratch implementation of it is complete and cross-checked against real ground height on two independent live servers, matching to well under a meter. Rendering it as an actual 3D surface in the live view is the next step.
 - A large and growing automated test suite, a substantial fraction of it built on real byte fixtures captured from a live server, not synthetic data alone.
 
 **In progress / deliberately deferred:**
-- Terrain/world rendering — currently a flat reference grid, not real game terrain. This is recognized as a prerequisite for any meaningful crafting, combat, or travel system and is next in line.
+- Terrain *rendering* — the generation logic itself is done and live-verified (see above); everything rendered so far still sits on a flat reference grid while that gets hooked into the rendering pipeline.
 - Player-driven input — the client can observe and render the world live, but a human isn't yet driving a character through it end-to-end.
-- Crafting and combat protocol decode — both are real, substantial undertakings, largely undecoded so far, gated behind the radial-menu protocol work mentioned above.
+- Crafting and combat protocol decode — both are real, substantial undertakings, largely undecoded so far, gated behind the terrain and radial-menu work mentioned above.
 
 ## Architecture, at a glance
 
@@ -35,6 +36,7 @@ Deliberately described here at a high level only:
 - An application protocol layer that decodes login, character, zone, and real-time object-state traffic through a declarative, compile-time-checked schema system — not a hand-rolled parser per message type.
 - An in-memory world-state model that real decoded traffic feeds into, and that the rendering layer reads from.
 - A real-asset pipeline that resolves the game's own archive files into renderable geometry.
+- A from-scratch procedural terrain generation layer, independent of the rendering pipeline and directly verifiable on its own (see Progress).
 - A Vulkan-based rendering layer built on top of all of the above.
 - A set of test/verification tools used to exercise every piece of this against a real server.
 
