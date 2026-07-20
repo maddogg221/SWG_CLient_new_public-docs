@@ -80,10 +80,16 @@ The instinct going in was to keep building outward — more of the world, more t
 
 The next real gap this project had never touched: characters and creatures. Every player and creature had rendered as a placeholder shape until now — this closed that. Real 3D models are now resolved and rendered for both the player's own character and nearby creatures, parsed directly from the game's own character-model archive files (a distinct, previously-unexplored format from the general object-model pipeline above — skeleton, skinned mesh, and multi-part appearance data, each researched and parsed from scratch). Deliberately scoped to a static pose for this pass — real animation playback is separate, future work.
 
-Getting from "parses correctly against a handful of hand-picked real files" to "actually renders live against a real server" surfaced three genuine bugs along the way, each found and fixed against real data rather than guessed — including one that turned out to be the exact same underlying cause as the still-open player-structure gap noted below, so that fix likely resolves both at once (not yet independently re-confirmed for structures specifically).
+Getting from "parses correctly against a handful of hand-picked real files" to "actually renders live against a real server" surfaced three genuine bugs along the way, each found and fixed against real data rather than guessed.
+
+## Milestone: real building rendering, exterior and interior alike
+
+Player-placed structures — houses, guild halls, and similar buildings — now render as their real, full geometry, not a placeholder shape. This turned out to need a format the project had never encountered before, entirely separate from the one ordinary objects and characters use: a real building is described as a set of interior rooms, each with its own real 3D model, connected to each other and to the outside by doorways. Untangling that from the game's own archive files — and confirming, against real captured data rather than assumption, which piece represents a building's outer shell versus its inside — was this milestone's real work.
+
+Verified live against an actual player-owned house: a genuine three-story structure with a working elevator, all eighteen real rooms (exterior included) resolving and rendering correctly.
 
 ## What's next
 
-- **World objects.** Most real in-game objects already render correctly (see "real objects, rendered as real objects" above), but player-placed structures specifically — houses and similar buildings — were found not to, during an earlier pass's live terrain testing. The underlying cause has likely just been fixed as a side effect of the character-rendering work above, but that hasn't been independently re-confirmed against a real structure yet.
+- **Cell-relative movement.** Now that a building's real interior renders, the next real gap is walking through it — right now the player's position tracking only understands open outdoor space, so stepping through a building's front door doesn't yet put you meaningfully "inside" it (there's real floor geometry there now, just no awareness yet of standing on it).
 - **Crafting.** A closer look at what crafting actually requires under the hood turned up a genuine surprise: an earlier assumption about what was blocking it turned out to be wrong, and the real path there is shorter than expected. Still real work ahead — a dedicated interaction system, and the ability to carry and hand over items — but not the large undertaking it was thought to be.
 - **Combat protocol decode.** Still a large, mostly-unexplored surface, intentionally deferred until the above is in place.
