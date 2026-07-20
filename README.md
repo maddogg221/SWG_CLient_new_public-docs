@@ -20,12 +20,13 @@ The long-term goal is a complete, modern client capable of real gameplay: moveme
 - A real rendering pipeline (**Vulkan**), decided on and built after direct hands-on rendering experience with an earlier prototype backend. Live-verified: a real 3D view showing tracked objects, a ground reference grid, a minimap, and floating name labels.
 - **Real game asset loading**, resolving actual objects from the live server into their real 3D models pulled directly from the game's own client data files — not placeholder shapes. This closed a long-standing internal mystery in how the game identifies which model belongs to which object; solving it made real content start rendering for the first time.
 - The game's right-click radial-menu interaction protocol, solved and then live-confirmed against real captured traffic — a prerequisite for meaningfully decoding crafting and combat traffic, both of which are next.
-- **Real procedural terrain generation** — the game's actual terrain isn't a stored heightmap but a rule-driven generation system plus a real coherent-noise function; this project's own from-scratch implementation of it is complete and cross-checked against real ground height on two independent live servers, matching to well under a meter. Rendering it as an actual 3D surface in the live view is the next step.
+- **Real procedural terrain**, generated and rendered — the game's actual terrain isn't a stored heightmap but a rule-driven generation system plus a real coherent-noise function; this project's own from-scratch implementation of it is complete, cross-checked against real ground height on two independent live servers (matching to well under a meter), and now actually rendered as a real 3D surface in the live view rather than a flat placeholder.
+- **Player-driven movement** — a human can now walk the character through the live world with real keyboard input, height-clamped to the real rendered terrain, with real movement reported back to the server over the network. Open-world walking only so far.
 - A large and growing automated test suite, a substantial fraction of it built on real byte fixtures captured from a live server, not synthetic data alone.
 
 **In progress / deliberately deferred:**
-- Terrain *rendering* — the generation logic itself is done and live-verified (see above); everything rendered so far still sits on a flat reference grid while that gets hooked into the rendering pipeline.
-- Player-driven input — the client can observe and render the world live, but a human isn't yet driving a character through it end-to-end.
+- Player-placed structures (houses and similar buildings) don't yet render as their real models — found during this pass's live terrain testing, cause precisely identified, fix not yet written.
+- Movement is open-world walking only — no interiors, running, or other locomotion states yet.
 - Crafting and combat protocol decode — both are real, substantial undertakings, largely undecoded so far, gated behind the terrain and radial-menu work mentioned above.
 
 ## Architecture, at a glance

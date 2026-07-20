@@ -58,7 +58,19 @@ The final piece — does the generated height actually match the real game world
 
 Visual rendering of this terrain (turning generated height/color data into an actual 3D surface on screen) is the next concrete step — the generation logic itself is done and verified; hooking it into the rendering pipeline isn't yet.
 
+## Milestone: terrain rendering — a real 3D surface, live-verified
+
+The generation logic from the previous milestone is now actually hooked into the rendering pipeline: real, generated terrain renders as an actual 3D surface in the live view, streamed in and out around the viewer as they move rather than loaded all at once. A character now visibly stands on real ground instead of a flat placeholder plane.
+
+Getting there surfaced a wider version of the axis-mislabeling issue described in the Technical Notes: the original fix covered one message type, but the same mistaken assumption turned out to have been silently copied into several sibling message types that carry position data — every one of them traced down and corrected the same way, not just the one that happened to get caught first. Worth calling out because of *how* it was caught again: not from re-reading source more carefully, but because the newly-rendered real terrain gave, for the first time, an independent way to visually notice that a tracked position didn't match the ground underneath it. A live-only class of bug, invisible from source alone.
+
+## Milestone: player-driven movement
+
+A human can now actually walk the character through the live world, rather than only spectating decoded world state. Keyboard input drives real movement, height-clamped to the newly-rendered real terrain, and — for the first time — this project sends something back to the server: a real outbound network message reporting the character's own movement, built the same careful, verify-against-the-real-protocol way as every decoder before it. Live-verified end to end against a real server connection.
+
+Deliberately scoped to open-world walking for this first pass; movement inside building interiors, running, and other locomotion states are follow-up work, not yet built.
+
 ## What's next
 
-- **Terrain rendering.** The generation logic is done and live-verified (see above); turning it into an actual rendered 3D surface in the live view is next.
+- **World objects.** Most real in-game objects already render correctly (see "real objects, rendered as real objects" above), but player-placed structures specifically — houses and similar buildings — were found not to, during this pass's live terrain testing. The cause has been precisely identified; the fix hasn't been written yet.
 - **Crafting and combat protocol decode.** Both are large, mostly-unexplored surfaces, intentionally deferred until the prerequisites above are in place.
