@@ -70,7 +70,14 @@ A human can now actually walk the character through the live world, rather than 
 
 Deliberately scoped to open-world walking for this first pass; movement inside building interiors, running, and other locomotion states are follow-up work, not yet built.
 
+## Milestone: a real multi-threaded foundation, not just a working prototype
+
+Before adding more visible features, a deliberate pause to get something less glamorous right: how the pieces actually run. Networking, background loading (real object models and terrain streaming in as the world unfolds), and the visible frame being drawn each moment now genuinely run independently of each other, rather than all sharing one sequential loop. Loading real content used to occasionally cause a visible stutter — a burst of nearby terrain generating all at once, for instance — because that work briefly held up the frame being drawn. That's fixed: loading now happens in the background with a real budget on how much gets absorbed per frame, and a noticeable stutter at the start of a session measurably improved as a result.
+
+The instinct going in was to keep building outward — more of the world, more to look at. The choice made instead: treat this as foundational work worth doing deliberately, not as a reaction to a crisis. A steady, unglamorous stretch like this is exactly the kind of work that's easy to skip and expensive to skip *twice*.
+
 ## What's next
 
 - **World objects.** Most real in-game objects already render correctly (see "real objects, rendered as real objects" above), but player-placed structures specifically — houses and similar buildings — were found not to, during this pass's live terrain testing. The cause has been precisely identified; the fix hasn't been written yet.
-- **Crafting and combat protocol decode.** Both are large, mostly-unexplored surfaces, intentionally deferred until the prerequisites above are in place.
+- **Crafting.** A closer look at what crafting actually requires under the hood turned up a genuine surprise: an earlier assumption about what was blocking it turned out to be wrong, and the real path there is shorter than expected. Still real work ahead — a dedicated interaction system, and the ability to carry and hand over items — but not the large undertaking it was thought to be.
+- **Combat protocol decode.** Still a large, mostly-unexplored surface, intentionally deferred until the above is in place.
