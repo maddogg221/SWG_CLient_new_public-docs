@@ -76,8 +76,14 @@ Before adding more visible features, a deliberate pause to get something less gl
 
 The instinct going in was to keep building outward — more of the world, more to look at. The choice made instead: treat this as foundational work worth doing deliberately, not as a reaction to a crisis. A steady, unglamorous stretch like this is exactly the kind of work that's easy to skip and expensive to skip *twice*.
 
+## Milestone: real character models, in a static pose
+
+The next real gap this project had never touched: characters and creatures. Every player and creature had rendered as a placeholder shape until now — this closed that. Real 3D models are now resolved and rendered for both the player's own character and nearby creatures, parsed directly from the game's own character-model archive files (a distinct, previously-unexplored format from the general object-model pipeline above — skeleton, skinned mesh, and multi-part appearance data, each researched and parsed from scratch). Deliberately scoped to a static pose for this pass — real animation playback is separate, future work.
+
+Getting from "parses correctly against a handful of hand-picked real files" to "actually renders live against a real server" surfaced three genuine bugs along the way, each found and fixed against real data rather than guessed — including one that turned out to be the exact same underlying cause as the still-open player-structure gap noted below, so that fix likely resolves both at once (not yet independently re-confirmed for structures specifically).
+
 ## What's next
 
-- **World objects.** Most real in-game objects already render correctly (see "real objects, rendered as real objects" above), but player-placed structures specifically — houses and similar buildings — were found not to, during this pass's live terrain testing. The cause has been precisely identified; the fix hasn't been written yet.
+- **World objects.** Most real in-game objects already render correctly (see "real objects, rendered as real objects" above), but player-placed structures specifically — houses and similar buildings — were found not to, during an earlier pass's live terrain testing. The underlying cause has likely just been fixed as a side effect of the character-rendering work above, but that hasn't been independently re-confirmed against a real structure yet.
 - **Crafting.** A closer look at what crafting actually requires under the hood turned up a genuine surprise: an earlier assumption about what was blocking it turned out to be wrong, and the real path there is shorter than expected. Still real work ahead — a dedicated interaction system, and the ability to carry and hand over items — but not the large undertaking it was thought to be.
 - **Combat protocol decode.** Still a large, mostly-unexplored surface, intentionally deferred until the above is in place.

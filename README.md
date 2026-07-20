@@ -23,10 +23,12 @@ The long-term goal is a complete, modern client capable of real gameplay: moveme
 - **Real procedural terrain**, generated and rendered — the game's actual terrain isn't a stored heightmap but a rule-driven generation system plus a real coherent-noise function; this project's own from-scratch implementation of it is complete, cross-checked against real ground height on two independent live servers (matching to well under a meter), and now actually rendered as a real 3D surface in the live view rather than a flat placeholder.
 - **Player-driven movement** — a human can now walk the character through the live world with real keyboard input, height-clamped to the real rendered terrain, with real movement reported back to the server over the network. Open-world walking only so far.
 - **A real multi-threaded foundation** — networking, background content loading, and rendering now run independently rather than sharing one sequential loop, with loading work kept off the visible frame and a real budget on how much streams in at once. A noticeable stutter at the start of a session measurably improved as a direct result.
+- **Real character and creature models** — the player's own character and nearby creatures now render as real 3D models (in a static pose) resolved directly from the game's own character-model archives, rather than placeholder shapes. A previously wholly-unexplored asset format, researched and parsed from scratch, and live-verified: a real player-character model and real nearby creatures both confirmed rendering against a live server.
 - A large and growing automated test suite, a substantial fraction of it built on real byte fixtures captured from a live server, not synthetic data alone.
 
 **In progress / deliberately deferred:**
-- Player-placed structures (houses and similar buildings) don't yet render as their real models — found during this pass's live terrain testing, cause precisely identified, fix not yet written.
+- Player-placed structures (houses and similar buildings) don't yet render as their real models — the underlying cause has likely just been fixed as a side effect of the character-model work above, but that hasn't been independently re-confirmed against a real structure yet.
+- Character animation (walking, running, idle) isn't wired up yet — models render in a fixed pose so far.
 - Movement is open-world walking only — no interiors, running, or other locomotion states yet.
 - Crafting protocol decode — a closer look turned up a genuine surprise (an earlier assumption about what was blocking it was wrong, and the real path is shorter than expected), but it's not built yet.
 - Combat protocol decode — still a real, substantial, largely-undecoded undertaking.
