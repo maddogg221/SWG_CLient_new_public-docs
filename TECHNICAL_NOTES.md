@@ -73,6 +73,22 @@ None of those three were the answer, but ruling each one out *was* the answer fo
 
 The methodological point worth keeping, independent of the specific answer: a wrong-looking result that's been fully, honestly traced to its actual cause is worth more than a plausible-sounding guess left unverified, even when — especially when — the traced result isn't the one being hoped for going in.
 
+## An experimental fix that a live-code read proved unnecessary
+
+A real, visible animation artifact on articulated character geometry — a flat, collapsing seam at certain joints — led to trying a well-known alternative blending technique specifically designed to eliminate that class of artifact, on the theory that the more common, simpler blending approach was the inherent cause. It was a reasonable theory: the artifact matched a textbook description of that simpler approach's known failure mode closely enough to justify the experiment.
+
+Reading the real client's own compiled code settled it differently. The official implementation uses the plain, simpler blending approach — not the more sophisticated alternative the experiment had switched to. If the simpler approach's known failure mode were really the cause, the official client would show the same artifact under the same conditions, and it doesn't. That's a clean, falsifiable test: the theory predicted something checkable, and reading the real implementation checked it directly rather than continuing to guess. The experimental change was reverted in favor of matching the confirmed real technique, and the search for the actual cause narrowed to something else — not the blending family, but somewhere in the underlying per-joint data feeding it.
+
+The broader point: an experimental fix that make a symptom look different isn't the same as a fix that addresses the real cause, and the fastest way to tell the two apart, when the ground truth is available at all, is to go read it directly rather than keep iterating on the symptom.
+
+## Knowing when to stop chasing a root cause and fix the data instead
+
+A follow-up investigation into that same joint artifact went looking for ground truth more directly — tracing how the official client actually manages the memory it writes finished per-vertex data into, frame by frame. That trace turned up a lot of real, working detail: a resource-pool allocator identified by name via a debug string baked into the binary, the specific method responsible for handing back a writable buffer, and a ring/bump-allocator pattern managing where in a shared arena each frame's data actually lands.
+
+What it didn't turn up, after a long session, was the literal values being written — the actual numbers needed to compare directly against this project's own computed output for the same joints. Getting there would have meant reliably capturing several different pieces of fast-changing, live process state at the exact same instant, by hand, through a slow manual read-and-record workflow — and two separate attempts at that hit the same wall: values read a few steps apart in time turned out to be already inconsistent with each other by the time all of them were in hand.
+
+Faced with that, the practical call was to stop pushing on the reverse-engineering thread for the moment and go fix the actual defect a different way: directly reworking the affected geometry's own per-vertex weighting using existing, community-built asset tooling, rather than continuing to chase the official client's exact internal arithmetic. This doesn't require ever learning the precise root cause — it repairs the specific broken data directly, and can be checked against the same live rendering used throughout. If a cleaner way to capture multiple pieces of live state atomically turns up later (scripted, rather than manual, capture is the obvious next tool for that), the deeper question is still worth returning to — but shipping a real fix didn't need to wait on it.
+
 ## What's deliberately not shown here
 
 - The actual message/field layouts this project has decoded (that's the protocol reverse-engineering work itself, and the whole point of keeping the implementation private).
