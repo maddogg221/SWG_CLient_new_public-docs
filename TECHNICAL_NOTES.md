@@ -137,6 +137,16 @@ It didn't, and the only way to find that out for certain was to stop reasoning a
 
 A first concrete guess at the specific mechanism — building that mapping from a plain, un-corrected rest skeleton rather than the joint-orientation-corrected one currently used — was tested the same direct way and made the result worse, not better, cleanly closing off that particular idea rather than leaving it as an open, untested guess. The real mechanism isn't found yet, but the difference between "haven't found it" and where this investigation started is significant: the search now has a known-correct half of the pipeline, a precisely measured symptom, and one ruled-out theory, instead of an open-ended question spanning an entire animation system.
 
+## When an entire category of explanation turns out to be the wrong category
+
+After decisively narrowing a stubborn animation defect down to one specific step in the pipeline (see above), the obvious next move was systematically testing every reasonable variation of the math at that step - different orderings, different reference conventions, the handful of alternative formulas that are the standard textbook options for this kind of problem. All of them were tested properly, one at a time, against a precise real measurement rather than eyeballing a render - and none of them worked. Not "one worked a little better," genuinely none.
+
+That's a useful result on its own, but the more useful move was noticing what it implied: if a dozen reasonable variations of the same formula all fail the same way, the formula itself probably isn't the problem - the assumption underneath all of them might be. So instead of trying variation thirteen, the next check tested that underlying assumption directly: does a specific point on the character model actually sit near the joint that's supposed to be moving it?
+
+It didn't - not by a small margin, but by a distance close to the character's entire height, and by almost exactly the same amount for several different points on completely different fingers. A consistent, uniform offset like that isn't what a wrong rotation formula produces; a wrong formula's error tends to grow or shrink depending on how much the joint has rotated. A flat, constant mismatch instead points at something much more basic: two pieces of data that are each individually fine, describing positions measured from two different starting points, being combined as if they shared one.
+
+The specific mechanism behind that mismatch isn't confirmed yet, but the shape of the investigation changed meaningfully: instead of continuing to search inside a category of explanation that had now been thoroughly exhausted, there's a concrete, different, and much more promising direction to check next.
+
 ## What's deliberately not shown here
 
 - The actual message/field layouts this project has decoded (that's the protocol reverse-engineering work itself, and the whole point of keeping the implementation private).
