@@ -129,6 +129,14 @@ The corrected comparison also produced a genuinely useful positive result: measu
 
 The lesson, worth keeping independent of this specific bug: "two systems produce a similarly broken-looking result" is not the same claim as "two systems agree," and treating them as equivalent risks locking in a wrong theory of the cause. Checking real, specific values against each other directly — not just comparing overall impressions — is worth doing before trusting a conclusion built on "these two things must share the same problem."
 
+## Closing the gap between "the math checks out" and "it still looks wrong"
+
+Verifying that one specific piece of a pipeline is correct is not the same claim as verifying the whole pipeline is correct, and it's worth being precise about the difference rather than letting a partial result quietly stand in for a complete one. Having confirmed the skeleton's own joint positions were correct, the next real question was whether that same confidence extended to the following step: taking those correct joint positions and actually applying them to a mesh's real vertices.
+
+It didn't, and the only way to find that out for certain was to stop reasoning about the code and run it — the actual function the live game calls, on the actual extracted vertex data, producing real numbers to check against a known-correct reference size. The result was unambiguous: vertices that should form a hand a little over a hand's-width across came out spanning most of a full body-length instead, and the size of that error grew directly with how far the character's pose had moved from its rest position — a real, measured relationship, not a guess. That's a meaningfully different, more useful place to be than before: not "something in this whole system is wrong," but "specifically the step that maps a rest-pose vertex onto its currently-posed bone."
+
+A first concrete guess at the specific mechanism — building that mapping from a plain, un-corrected rest skeleton rather than the joint-orientation-corrected one currently used — was tested the same direct way and made the result worse, not better, cleanly closing off that particular idea rather than leaving it as an open, untested guess. The real mechanism isn't found yet, but the difference between "haven't found it" and where this investigation started is significant: the search now has a known-correct half of the pipeline, a precisely measured symptom, and one ruled-out theory, instead of an open-ended question spanning an entire animation system.
+
 ## What's deliberately not shown here
 
 - The actual message/field layouts this project has decoded (that's the protocol reverse-engineering work itself, and the whole point of keeping the implementation private).
