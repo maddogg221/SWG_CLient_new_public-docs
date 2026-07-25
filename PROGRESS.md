@@ -88,8 +88,16 @@ Player-placed structures — houses, guild halls, and similar buildings — now 
 
 Verified live against an actual player-owned house: a genuine three-story structure with a working elevator, all eighteen real rooms (exterior included) resolving and rendering correctly.
 
+## Milestone: real skeletal animation
+
+Characters had rendered in a single static pose since the milestone above — this closed that gap. Real keyframe animation now plays back for both the player's own character and nearby creatures, driven by the game's own real animation-state and clip data, resolved fresh for this project rather than assumed from documentation.
+
+Getting from "the pipeline runs without crashing" to "the result actually looks like a person" surfaced a genuinely stubborn defect: a mesh-tearing artifact at the wrists and fingers that survived many separate fix attempts across a long stretch of this project's own history, each one validated as thoroughly as the last one's failure suggested was needed, each one still wrong once actually tested live. The eventual real cause, and the lesson learned isolating it, is written up in the technical notes. A related, smaller defect (fingers curling the wrong direction) was found and fixed immediately afterward using the same discipline.
+
+Live-verified against a real server connection: a full character body — torso, arms, legs, hands, and fingers — now renders as a single connected, correctly-proportioned, animated shape.
+
 ## What's next
 
-- **Cell-relative movement.** Now that a building's real interior renders, the next real gap is walking through it — right now the player's position tracking only understands open outdoor space, so stepping through a building's front door doesn't yet put you meaningfully "inside" it (there's real floor geometry there now, just no awareness yet of standing on it).
+- **Locomotion polish.** The core animation pipeline now works; walking specifically still needs its own dedicated pass, along with confirming the character's resting stance matches what a player actually sees in the live game rather than an internal reference pose.
 - **Crafting.** A closer look at what crafting actually requires under the hood turned up a genuine surprise: an earlier assumption about what was blocking it turned out to be wrong, and the real path there is shorter than expected. Still real work ahead — a dedicated interaction system, and the ability to carry and hand over items — but not the large undertaking it was thought to be.
 - **Combat protocol decode.** Still a large, mostly-unexplored surface, intentionally deferred until the above is in place.
