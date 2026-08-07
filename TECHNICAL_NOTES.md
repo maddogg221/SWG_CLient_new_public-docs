@@ -73,6 +73,48 @@ None of those three were the answer, but ruling each one out *was* the answer fo
 
 The methodological point worth keeping, independent of the specific answer: a wrong-looking result that's been fully, honestly traced to its actual cause is worth more than a plausible-sounding guess left unverified, even when — especially when — the traced result isn't the one being hoped for going in.
 
+## A scoping pass: could the original client's rendering layer be swapped for a modern one?
+
+A rendering defect being chased in a build of the original client, using the same "read the compiled
+code directly" technique described above, eventually hit a real limit: the remaining open questions
+lived at the level of compiled shader bytecode and GPU-side state, a class of problem no CPU-side
+debugger can answer, however far it's pushed. The obvious next tool — a modern GPU frame-capture
+debugger — turned out to be flatly incompatible with an executable this old, confirmed directly
+rather than assumed and abandoned as a dead end.
+
+Rather than keep excavating without the right instrument, the more useful question became: is the
+original client's own graphics-facing interface actually a clean, swappable boundary a modern backend
+could be written against — independent of this project's own already-working Vulkan renderer, a
+separate, exploratory line of research into the original binary. Direct inspection of the compiled
+interface (not documentation, not guesswork) found it's a single function-pointer table, 109 entries
+total. Breaking those down: roughly two dozen are draw-call topology variants that collapse to two or
+three real operations in any modern graphics API; about two dozen more are simple capability queries;
+another dozen are standard vertex/index buffer management with a close mapping to modern equivalents;
+the remainder covers ordinary transform, camera, and render-state concepts. The one genuinely hard
+cluster is eight shader/material-related entries.
+
+There's real historical precedent for exactly this kind of swap, found in the client's own code, not
+assumed: it still carries references to an earlier graphics-backend generation alongside the one
+actually in use — evidence the original developers maintained two different backend implementations
+against this same interface at different points in the client's life, not that the interface only
+ever had to support one. The client's spatial-visibility system (deciding what's worth drawing each
+frame) turned out to have zero dependency on the graphics API itself once its source was checked
+directly — a self-contained, CPU-side library that would carry over to a different backend completely
+unchanged. And the apparent shader-authoring surface looked enormous at first glance — tens of
+thousands of individual template files — but tracing how they actually reference their underlying
+compiled programs found the real number is 448 distinct effects, and their own naming convention
+strongly suggests those 448 are combinations of a much smaller set — maybe a dozen — of real
+underlying techniques (environment mapping, specular mapping, anisotropic filtering, alpha blending,
+and similar standard techniques), the kind of thing a well-designed permutation system can plausibly
+cover without hand-authoring each one individually.
+
+Every angle checked this pass came back more bounded than expected going in — not a vague,
+open-ended "rewrite the renderer" proposition, but a scoped, well-understood contract sitting on a
+separation the original codebase already validated once itself, with a shader-rewrite surface in the
+hundreds rather than the tens of thousands, and the one dependency that looked riskiest at the start
+confirmed to be a non-issue. Worth recording as a genuinely soundly-scoped potential project, not
+just a hopeful idea — though nothing beyond this scoping pass has been built yet.
+
 ## An experimental fix that a live-code read proved unnecessary
 
 A real, visible animation artifact on articulated character geometry — a flat, collapsing seam at certain joints — led to trying a well-known alternative blending technique specifically designed to eliminate that class of artifact, on the theory that the more common, simpler blending approach was the inherent cause. It was a reasonable theory: the artifact matched a textbook description of that simpler approach's known failure mode closely enough to justify the experiment.
